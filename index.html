@@ -1,16 +1,57 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Model Lab</title>
-    </head>
-    <body>
-        <h1>Age Calculator</h1>
-        <form id="ageForm">
-            <label for="birthYear">Enter your birth year:</label>
-            <input type="number" id="birthYear" name="birthYear" required>
-            <button type="submit">Calculate Age</button>    
-        </form>
-        <div id="result" class="result"></div>
+<html lang="en">
+<head>
+    <title>Age Calculator</title>
+</head>
+<body>
+    <main class="calculator">
+        <h1>Age calculator</h1>
+        <p class="intro">Enter your date of birth</p>
 
-    </body>
+        <form id="ageForm">
+            <label for="birthDate">Date of birth</label>
+            <input type="date" id="birthDate" name="birthDate" required>
+            <button type="submit">Calculate age</button>
+        </form>
+
+        <div id="result" class="result" role="status" aria-live="polite" hidden></div>
+    </main>
+    <script>
+        const form = document.getElementById('ageForm');
+        const birthDateInput = document.getElementById('birthDate');
+        const result = document.getElementById('result');
+
+        birthDateInput.max = new Date().toISOString().split('T')[0];
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const birthDate = new Date(`${birthDateInput.value}T00:00:00`);
+            const today = new Date();
+
+            if (!birthDateInput.value || birthDate > today) {
+                result.hidden = false;
+                result.className = 'result error';
+                result.textContent = 'Please enter a valid date that is not in the future.';
+                return;
+            }
+
+            let years = today.getFullYear() - birthDate.getFullYear();
+            let months = today.getMonth() - birthDate.getMonth();
+            let days = today.getDate() - birthDate.getDate();
+
+            if (days < 0) {
+                months -= 1;
+                days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+            }
+            if (months < 0) {
+                years -= 1;
+                months += 12;
+            }
+
+            result.hidden = false;
+            result.className = 'result';
+            result.innerHTML = `<strong>${years} years</strong><span>${months} months and ${days} days</span>`;
+        });
+    </script>
+</body>
 </html>
